@@ -23,6 +23,26 @@ module.exports.getUserById = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
+  let nameIsValid = false;
+  let aboutIsValid = false;
+  let avatarIsValid = false;
+
+  if (name && (name.length > 2) && (name.length < 30) && (typeof name === 'string')) {
+    nameIsValid = true;
+  }
+
+  if (about && (about.length > 2) && (about.length < 30) && (typeof about === 'string')) {
+    aboutIsValid = true;
+  }
+
+  if (avatar && (avatar.length > 5) && (typeof avatar === 'string')) {
+    avatarIsValid = true;
+  }
+
+  if (!nameIsValid || !aboutIsValid || !avatarIsValid) {
+    return res.status(400).send({ message: 'Данные не валидны. Проверьте еще раз' });
+  }
+
   User.create({ name, about, avatar })
     .then((userData) => res.send(userData))
     .catch((err) => res.status(err.statusCode).send({ message: err.message }));
