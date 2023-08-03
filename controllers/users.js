@@ -6,6 +6,8 @@ const SameDataError = require('../Errors/SameDataError');
 
 const User = require('../models/user');
 
+// Начал делать разбор ошибок, и какую-то валидацию но прям не понимаю зачем,
+// если валидация на следующем спринте?S
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
@@ -14,10 +16,8 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((userData) => {
-      res.send(userData);
-    })
-    .catch((err) => res.status(err.statusCode).send({ message: err.message }));
+    .then((userData) => res.send(userData))
+    .catch(res.status(400).send({ message: `Пальзователь не существует` }));
 };
 
 module.exports.createUser = (req, res) => {
@@ -67,8 +67,6 @@ module.exports.updateAvatar = (req, res) => {
   }
 };
 
-// Начал делать разбор всех ошибок, но не очень понял надо ли это делать,
-// т.к. следующий спринт - валидация?
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
