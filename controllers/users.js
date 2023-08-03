@@ -106,7 +106,7 @@ module.exports.updateProfile = (req, res) => {
         }
 
         // Проверка на отличия
-        if (name && (name !== userData.name) ) {
+        if (name && (name !== userData.name)) {
           userData.name = name;
           newData = true;
         }
