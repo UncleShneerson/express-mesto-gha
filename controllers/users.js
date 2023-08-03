@@ -20,10 +20,14 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .then((userData) => {
-      res.status(200).send(userData);
+      if (userData) {
+        res.status(200).send(userData);
+        return;
+      }
+      res.status(404).send({ message: 'Пользователь не найден' });
     })
     .catch(() => {
-      res.status(404).send({ message: 'Пальзователь не существует' });
+      res.status(400).send({ message: 'Неверный идентификатор' });
     });
 };
 
@@ -81,30 +85,29 @@ module.exports.updateAvatar = (req, res) => {
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
+  // Валидация
+  if (!name && !about) {
+    return Promise.reject(new ValidationError('Значения не переданы'));
+  }
+
+  let nameIsValid = false;
+  let aboutIsValid = false;
+
+  if (name && (name.length > 2) && (name.length < 30) && (typeof name === 'string')) {
+    nameIsValid = true;
+  }
+
+  if (about && (about.length > 2) && (about.length < 30) && (typeof about === 'string')) {
+    aboutIsValid = true;
+  }
+
+  if (!nameIsValid || !aboutIsValid) {
+    return res.status(400).send({ message: 'Данные не валидны. Проверьте еще раз' });
+  }
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
     .then((userData) => {
       let newData = false;
       try {
-        // Валидация
-        if (!name && !about) {
-          return Promise.reject(new ValidationError('Значения не переданы'));
-        }
-
-        let nameIsValid = false;
-        let aboutIsValid = false;
-
-        if (name && (name.length > 2) && (name.length < 30) && (typeof name === 'string')) {
-          nameIsValid = true;
-        }
-
-        if (about && (about.length > 2) && (about.length < 30) && (typeof about === 'string')) {
-          aboutIsValid = true;
-        }
-
-        if (!nameIsValid || !aboutIsValid) {
-          return res.status(400).send({ message: 'Данные не валидны. Проверьте еще раз' });
-        }
-
         // Проверка на отличия
         if (name && (name !== userData.name)) {
           userData.name = name;
