@@ -8,21 +8,30 @@ const User = require('../models/user');
 
 // Начал делать разбор ошибок, и какую-то валидацию но прям не понимаю зачем,
 // если валидация на следующем спринте?S
+
+// Получить всех пользователей
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
     .catch((err) => res.status(500).send({ message: err.message }));
 };
 
+// Получить юзера по ID
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .then((userData) => res.send(userData))
-    .catch(res.status(400).send({ message: `Пальзователь не существует` }));
+    .then((userData) => {
+      res.status(200).send(userData);
+    })
+    .catch(() => {
+      res.status(404).send({ message: 'Пальзователь не существует' });
+    });
 };
 
+// Создать юзера
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
+  // Валидация
   let nameIsValid = false;
   let aboutIsValid = false;
   let avatarIsValid = false;
@@ -48,6 +57,7 @@ module.exports.createUser = (req, res) => {
     .catch((err) => res.status(err.statusCode).send({ message: err.message }));
 };
 
+// Обновить аватар
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
 
@@ -67,6 +77,7 @@ module.exports.updateAvatar = (req, res) => {
   }
 };
 
+// Обновить профиль
 module.exports.updateProfile = (req, res) => {
   const { name, about } = req.body;
 
@@ -74,11 +85,28 @@ module.exports.updateProfile = (req, res) => {
     .then((userData) => {
       let newData = false;
       try {
+        // Валидация
         if (!name && !about) {
           return Promise.reject(new ValidationError('Значения не переданы'));
         }
 
-        if (name && (name !== userData.name)) {
+        let nameIsValid = false;
+        let aboutIsValid = false;
+
+        if (name && (name.length > 2) && (name.length < 30) && (typeof name === 'string')) {
+          nameIsValid = true;
+        }
+
+        if (about && (about.length > 2) && (about.length < 30) && (typeof about === 'string')) {
+          aboutIsValid = true;
+        }
+
+        if (!nameIsValid || !aboutIsValid) {
+          return res.status(400).send({ message: 'Данные не валидны. Проверьте еще раз' });
+        }
+
+        // Проверка на отличия
+        if (name && (name !== userData.name) ) {
           userData.name = name;
           newData = true;
         }
