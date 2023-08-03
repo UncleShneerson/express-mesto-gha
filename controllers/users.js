@@ -1,3 +1,5 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-param-reassign */
 const ValidationError = require('../Errors/ValidationError');
 const PropertyRequiredError = require('../Errors/PropertyRequiredError');
 const SameDataError = require('../Errors/SameDataError');
