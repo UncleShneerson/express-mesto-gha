@@ -1,10 +1,7 @@
 const path = require('path');
-const process = require('process');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-
-const { fakeUserId } = require('./middlewares/fakeUserId');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -17,15 +14,16 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-app.use(fakeUserId); // временная авторизация - удалить в ПР14
+app.use((req, res, next) => {
+  req.user = {
+    _id: '64ca18e62764e2b369eda3ff',
+  };
+  next();
+});
+
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Необработанные ошибки
-process.on('uncaughtException', (err, origin) => {
-  console.log(`${origin} ${err.name} c текстом ${err.message} не была обработана. Обратите внимание!`);
-});
 
 app.listen(PORT);
