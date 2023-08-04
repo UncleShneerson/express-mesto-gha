@@ -4,7 +4,13 @@ const cardCreateValidation = async (req, res, next) => {
   const { name, link } = req.body;
 
   if (!name || !link) {
-    return Promise.reject(new ValidationError('Значения не переданы или переданы не полностью'));
+    const err = new ValidationError('Значения не переданы или переданы не полностью');
+    return res.status(err.statusCode).send({ message: err.message });
+  }
+
+  if ((typeof name !== 'string') || (typeof link !== 'string')) {
+    const err = new ValidationError('Не верный формат данных');
+    return res.status(err.statusCode).send({ message: err.message });
   }
 
   let nameIsValid = false;

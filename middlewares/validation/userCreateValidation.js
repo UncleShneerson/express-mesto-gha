@@ -4,7 +4,13 @@ const userCreateValidation = async (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   if (!name || !about || !avatar) {
-    return Promise.reject(new ValidationError('Значения не переданы или переданы не полностью'));
+    const err = new ValidationError('Значения не переданы или переданы не полностью');
+    return res.status(err.statusCode).send({ message: err.message });
+  }
+
+  if ((typeof name !== 'string') || (typeof about !== 'string') || (typeof avatar !== 'string')) {
+    const err = new ValidationError('Не верный формат данных');
+    return res.status(err.statusCode).send({ message: err.message });
   }
 
   let nameIsValid = false;
