@@ -9,8 +9,16 @@ module.exports.getCards = (req, res) => {
 
 module.exports.deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((userData) => res.send(`Карточка ${userData.name} ${userData._id} - удалена`))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((cardData) => {
+      if (cardData) {
+        res.status(200).send(cardData);
+        return;
+      }
+      res.status(404).send({ message: 'Карточка не найдена' });
+    })
+    .catch(() => {
+      res.status(400).send({ message: 'Неверный идентификатор' });
+    });
 };
 
 module.exports.createCard = (req, res) => {

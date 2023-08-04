@@ -1,6 +1,0 @@
-const ValidationError = require('../Errors/ValidationError');
-
-module.exports.sendDataNotValid = (res) => {
-  const err = new ValidationError('Данные не валидны. Проверьте еще раз');
-  res.status(err.statusCode).send({ message: err.message });
-};
