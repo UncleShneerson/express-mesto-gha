@@ -12,10 +12,13 @@
     "no-param-reassign": [
       "error",
       {
-        "props": true,
-        "ignorePropertyModificationsFor": [
-          "bar"
-        ]
+        "props": false
+      }
+    ],
+    "consistent-return": [
+      "error",
+      {
+        "props": false
       }
     ]
   }

@@ -1,5 +1,3 @@
-/* eslint-disable consistent-return */
-/* eslint-disable no-param-reassign */
 const SameDataError = require('../Errors/SameDataError');
 
 const User = require('../models/user');
