@@ -26,8 +26,16 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((cardData) => res.send(cardData))
-    .catch((err) => res.status(err.statusCode).send({ message: err.message }));
+    .then((cardData) => {
+      if (cardData) {
+        res.status(200).send(cardData);
+        return;
+      }
+      res.status(404).send({ message: 'Карточка не найдена' });
+    })
+    .catch(() => {
+      res.status(400).send({ message: 'Неверный идентификатор' });
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -36,6 +44,14 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((cardData) => res.send(cardData))
-    .catch((err) => res.status(err.statusCode).send({ message: err.message }));
+    .then((cardData) => {
+      if (cardData) {
+        res.status(200).send(cardData);
+        return;
+      }
+      res.status(404).send({ message: 'Карточка не найдена' });
+    })
+    .catch(() => {
+      res.status(400).send({ message: 'Неверный идентификатор' });
+    });
 };
