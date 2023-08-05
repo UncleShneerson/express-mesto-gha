@@ -19,11 +19,11 @@ module.exports.deleteCardById = (req, res, next) => {
       res.status(OK_STATUS).send(cardData);
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError());
+      if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError('Несуществующий ID карточки'));
       }
       if (err.name === 'CastError') {
-        next(new NotFoundError());
+        next(new ValidationError('Некорректный ID карточки'));
       } else {
         next(err);
       }
