@@ -1,5 +1,4 @@
-// Спасибо за ревью. Надеюсь в этот раз получилось все сделать лучше )
-// Многое просто переписал по новой.
+// Еще раз спасибо за ревью ) по сравнению с первой отправкой - все стало мне сиииильно понятнее)
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -24,8 +23,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/users', require('./routes/users'), sendError);
-app.use('/cards', require('./routes/cards'), sendError);
+app.use('/users', require('./routes/users'));
+app.use('/cards', require('./routes/cards'));
 app.use('*', require('./routes/wrongPath'));
+
+app.use(sendError);
 
 app.listen(PORT);

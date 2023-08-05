@@ -1,11 +1,9 @@
-const OK_STATUS = 200;
 const CREATED = 201;
 const VALIDATION_ERROR = 400;
 const NOT_FOUND = 404;
 const SERVER_ERROR = 500;
 
 module.exports = {
-  OK_STATUS,
   CREATED,
   VALIDATION_ERROR,
   NOT_FOUND,

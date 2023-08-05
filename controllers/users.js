@@ -1,7 +1,7 @@
 const ValidationError = require('../Errors/ValidationError');
 const NotFoundError = require('../Errors/NotFoundError');
 
-const { OK_STATUS, CREATED } = require('../utils/errorCodes');
+const { CREATED } = require('../utils/errorCodes');
 
 const User = require('../models/user');
 
@@ -17,7 +17,7 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .then((userData) => {
-      res.status(OK_STATUS).send(userData);
+      res.send(userData);
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
@@ -53,7 +53,7 @@ module.exports.updateAvatar = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail()
     .then((userData) => {
-      res.status(OK_STATUS).send(userData);
+      res.send(userData);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -74,13 +74,13 @@ module.exports.updateProfile = (req, res, next) => {
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail()
     .then((userData) => {
-      res.status(OK_STATUS).send(userData);
+      res.send(userData);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError());
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError());
       } else {
         next(err);
