@@ -1,81 +1,86 @@
-const SameDataError = require('../Errors/SameDataError');
+const ValidationError = require('../Errors/ValidationError');
+const NotFoundError = require('../Errors/NotFoundError');
+
+const { OK_STATUS, CREATED } = require('../utils/errorCodes');
 
 const User = require('../models/user');
 
 // Получить всех пользователей
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => next(err));
 };
 
 // Получить юзера по ID
-module.exports.getUserById = (req, res) => {
+module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
+    .orFail()
     .then((userData) => {
-      if (userData) {
-        res.status(200).send(userData);
-        return;
-      }
-      res.status(404).send({ message: 'Пользователь не найден' });
+      res.status(OK_STATUS).send(userData);
     })
-    .catch(() => {
-      res.status(400).send({ message: 'Неверный идентификатор' });
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        next(new NotFoundError());
+      } else {
+        next(err);
+      }
     });
 };
 
 // Создать юзера
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((userData) => res.send(userData))
-    .catch((err) => res.status(err.statusCode).send({ message: err.message }));
+    .then((userData) => res.status(CREATED).send(userData))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      } else {
+        next(err);
+      }
+    });
 };
 
 // Обновить аватар
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
+    .orFail()
     .then((userData) => {
-      if (avatar !== userData.avatar) {
-        userData.avatar = avatar;
-        res.send(userData);
-      }
-      const err = Promise.reject(new SameDataError());
-      return res.status(err.statusCode).send({ message: err.message });
+      res.status(OK_STATUS).send(userData);
     })
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      }
+      if (err.name === 'CastError') {
+        next(new NotFoundError());
+      } else {
+        next(err);
+      }
+    });
 };
 
 // Обновить профиль
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
+    .orFail()
     .then((userData) => {
-      let newData = false;
-      try {
-        // Проверка на отличия
-        if (name && (name !== userData.name)) {
-          userData.name = name;
-          newData = true;
-        }
-
-        if (about && (about !== userData.about)) {
-          userData.about = about;
-          newData = true;
-        }
-
-        if (newData) {
-          res.send(userData);
-          return;
-        }
-        return Promise.reject(new SameDataError());
-      } catch (err) {
-        return Promise.reject(new Error(err.message));
-      }
+      res.status(OK_STATUS).send(userData);
     })
-    .catch((err) => res.status(err.statusCode).send({ message: err.message }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      }
+      if (err.name === 'CastError') {
+        next(new NotFoundError());
+      } else {
+        next(err);
+      }
+    });
 };

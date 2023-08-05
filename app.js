@@ -1,7 +1,10 @@
-const path = require('path');
+// Спасибо за ревью. Надеюсь в этот раз получилось все сделать лучше )
+// Многое просто переписал по новой.
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const sendError = require('./middlewares/sendError');
 
 const { PORT = 3000 } = process.env;
 const app = express();
@@ -21,10 +24,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+app.use('/users', require('./routes/users'), sendError);
+app.use('/cards', require('./routes/cards'), sendError);
 app.use('*', require('./routes/wrongPath'));
-
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT);

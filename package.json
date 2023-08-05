@@ -10,7 +10,7 @@
     "nodemon": "^3.0.1"
   },
   "scripts": {
-    "lint": "npx eslint",
+    "lint": "npx eslint .",
     "dev": "nodemon app.js",
     "start": "node app.js"
   },

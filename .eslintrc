@@ -8,18 +8,6 @@
           "_id"
         ]
       }
-    ],
-    "no-param-reassign": [
-      "error",
-      {
-        "props": false
-      }
-    ],
-    "consistent-return": [
-      "error",
-      {
-        "props": false
-      }
     ]
   }
 }

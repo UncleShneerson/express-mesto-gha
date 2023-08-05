@@ -1,65 +1,88 @@
+const ValidationError = require('../Errors/ValidationError');
+const NotFoundError = require('../Errors/NotFoundError');
+
+const { OK_STATUS, CREATED } = require('../utils/errorCodes');
+
 const Card = require('../models/card');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate('owner')
-    .then((cards) => res.send(cards))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((cards) => res.status(OK_STATUS).send(cards))
+    .catch((err) => next(err));
 };
 
-module.exports.deleteCardById = (req, res) => {
+module.exports.deleteCardById = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .orFail()
     .then((cardData) => {
-      if (cardData) {
-        res.status(200).send(cardData);
-        return;
-      }
-      res.status(404).send({ message: 'Карточка не найдена' });
+      res.status(OK_STATUS).send(cardData);
     })
-    .catch(() => {
-      res.status(400).send({ message: 'Неверный идентификатор' });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      }
+      if (err.name === 'CastError') {
+        next(new NotFoundError());
+      } else {
+        next(err);
+      }
     });
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
-    .then((cardData) => res.send({ data: cardData }))
-    .catch((err) => res.status(500).send({ message: err.message }));
+    .then((cardData) => res.status(CREATED).send({ data: cardData }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      } else {
+        next(err);
+      }
+    });
 };
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail()
     .then((cardData) => {
-      if (cardData) {
-        res.status(200).send(cardData);
-        return;
-      }
-      res.status(404).send({ message: 'Карточка не найдена' });
+      res.status(OK_STATUS).send(cardData);
     })
-    .catch(() => {
-      res.status(400).send({ message: 'Неверный идентификатор' });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      }
+      if (err.name === 'CastError') {
+        next(new NotFoundError());
+      } else {
+        next(err);
+      }
     });
 };
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail()
     .then((cardData) => {
-      if (cardData) {
-        res.status(200).send(cardData);
-        return;
-      }
-      res.status(404).send({ message: 'Карточка не найдена' });
+      res.status(OK_STATUS).send(cardData);
     })
-    .catch(() => {
-      res.status(400).send({ message: 'Неверный идентификатор' });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      }
+      if (err.name === 'CastError') {
+        next(new NotFoundError());
+      } else {
+        next(err);
+      }
     });
 };

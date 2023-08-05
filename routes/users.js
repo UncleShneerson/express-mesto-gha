@@ -8,16 +8,12 @@ const {
   updateProfile,
 } = require('../controllers/users');
 
-const userCreateValidation = require('../middlewares/validation/userCreateValidation');
-const userUpdateValidation = require('../middlewares/validation/userUpdateValidation');
-const avatarUpdateValidation = require('../middlewares/validation/avatarUpdateValidation');
+const sendError = require('../middlewares/sendError');
 
 router.get('/', getUsers);
-router.post('/', userCreateValidation, createUser);
-
-router.get('/:userId', getUserById);
-
-router.patch('/me/', userUpdateValidation, updateProfile);
-router.patch('/me/avatar', avatarUpdateValidation, updateAvatar);
+router.post('/', createUser);
+router.get('/:userId', getUserById, sendError);
+router.patch('/me/', updateProfile, sendError);
+router.patch('/me/avatar', updateAvatar, sendError);
 
 module.exports = router;
