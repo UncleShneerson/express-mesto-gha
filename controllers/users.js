@@ -20,8 +20,11 @@ module.exports.getUserById = (req, res, next) => {
       res.status(OK_STATUS).send(userData);
     })
     .catch((err) => {
+      if (err.name === 'DocumentNotFoundError') {
+        next(new NotFoundError('Несуществующий ID'));
+      }
       if (err.name === 'CastError') {
-        next(new NotFoundError());
+        next(new ValidationError('Некоректный ID'));
       } else {
         next(err);
       }
@@ -47,7 +50,7 @@ module.exports.createUser = (req, res, next) => {
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail()
     .then((userData) => {
       res.status(OK_STATUS).send(userData);
@@ -68,7 +71,7 @@ module.exports.updateAvatar = (req, res, next) => {
 module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true })
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail()
     .then((userData) => {
       res.status(OK_STATUS).send(userData);
