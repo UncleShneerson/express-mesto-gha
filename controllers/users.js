@@ -59,7 +59,7 @@ module.exports.updateAvatar = (req, res, next) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError());
       }
-      if (err.name === 'CastError') {
+      if (err.name === 'DocumentNotFoundError') {
         next(new NotFoundError());
       } else {
         next(err);
