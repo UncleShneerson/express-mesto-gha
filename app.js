@@ -1,12 +1,18 @@
 // Еще раз спасибо за ревью ) по сравнению с первой отправкой - все стало мне сиииильно понятнее)
 
+const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const helmet = require('helmet');
+
+const { errors } = require('celebrate');
 const sendError = require('./middlewares/sendError');
+const routes = require('./routes/index');
 
 const { PORT = 3000 } = process.env;
 const app = express();
+app.use(helmet());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -16,17 +22,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useUnifiedTopology: true,
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64ca18e62764e2b369eda3ff',
-  };
-  next();
-});
-
-app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
-app.use('*', require('./routes/wrongPath'));
-
+app.use(cookieParser());
+app.use(routes);
+app.use(errors());
 app.use(sendError);
 
 app.listen(PORT);

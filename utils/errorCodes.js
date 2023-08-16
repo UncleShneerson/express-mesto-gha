@@ -1,11 +1,15 @@
 const CREATED = 201;
 const VALIDATION_ERROR = 400;
 const NOT_FOUND = 404;
+const AUTH_ERROR = 401;
+const REG_ERROR = 409;
 const SERVER_ERROR = 500;
 
 module.exports = {
+  AUTH_ERROR,
   CREATED,
-  VALIDATION_ERROR,
   NOT_FOUND,
+  REG_ERROR,
   SERVER_ERROR,
+  VALIDATION_ERROR,
 };

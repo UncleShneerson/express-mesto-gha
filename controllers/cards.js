@@ -1,5 +1,6 @@
 const ValidationError = require('../Errors/ValidationError');
 const NotFoundError = require('../Errors/NotFoundError');
+const AuthError = require('../Errors/NotFoundError');
 
 const { CREATED } = require('../utils/errorCodes');
 
@@ -13,10 +14,21 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCardById = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .orFail()
-    .then((cardData) => {
-      res.send(cardData);
+  // if (req.user._id !== req.params.cardId) {
+  //   next(new NotFoundError('ага щааааз!'));
+  // }
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      const { _id, owner } = card;
+      if (String(owner) !== req.user._id) {
+        throw new AuthError('У вас недостаточно прав');
+      }
+      Card.findByIdAndRemove(_id)
+        .orFail()
+        .then((cardData) => {
+          res.send(cardData);
+        })
+        .catch((err) => next(err));
     })
     .catch((err) => {
       if (err.name === 'DocumentNotFoundError') {
