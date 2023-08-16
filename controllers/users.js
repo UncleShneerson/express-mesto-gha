@@ -31,10 +31,9 @@ module.exports.createUser = (req, res, next) => {
         next(new RegError());
       }
       if (err.name === 'ValidationError') {
-        next(new ValidationError());
-      } else {
-        next(err);
+        return next(new ValidationError());
       }
+      return next(err);
     });
 };
 

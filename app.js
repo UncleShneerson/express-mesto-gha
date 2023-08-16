@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-
+const { errors } = require('celebrate');
 const sendError = require('./middlewares/sendError');
 const routes = require('./routes/index');
 
@@ -21,6 +21,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 
 app.use(cookieParser());
 app.use(routes);
+app.use(errors());
 app.use(sendError);
 
 app.listen(PORT);
