@@ -1,5 +1,3 @@
-// Еще раз спасибо за ревью ) по сравнению с первой отправкой - все стало мне сиииильно понятнее)
-
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');

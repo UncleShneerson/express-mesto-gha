@@ -2,12 +2,13 @@ const { Joi, celebrate } = require('celebrate');
 
 const regexURL = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 const regexEmail = /^[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/;
+const regexPass = /\w-{6,30}/;
 
 // Валидация авторизации
 const signUpValidate = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().pattern(regexURL).required(),
-    password: Joi.string().min(6).pattern(regexEmail).required(),
+    email: Joi.string().pattern(regexEmail).required(),
+    password: Joi.string().min(6).max(30).pattern(regexPass).required(),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
     avatar: Joi.string().pattern(regexURL),
@@ -16,7 +17,7 @@ const signUpValidate = celebrate({
 
 const logInValidate = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().pattern(regexURL).required(),
+    email: Joi.string().pattern(regexEmail).required(),
     password: Joi.string().min(6).pattern(regexEmail).required(),
   }),
 });
