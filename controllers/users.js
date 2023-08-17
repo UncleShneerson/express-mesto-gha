@@ -91,7 +91,13 @@ module.exports.updateProfile = (req, res, next) => {
     .then((userData) => {
       res.send(userData);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      } else {
+        next(err);
+      }
+    });
 };
 
 // Обновить аватар
@@ -103,7 +109,13 @@ module.exports.updateAvatar = (req, res, next) => {
     .then((userData) => {
       res.send(userData);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      } else {
+        next(err);
+      }
+    });
 };
 
 // Получить всех пользователей

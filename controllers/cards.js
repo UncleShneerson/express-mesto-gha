@@ -1,5 +1,6 @@
 const NotFoundError = require('../Errors/NotFoundError');
 const NotEnoughRightsError = require('../Errors/NotEnoughRightsError');
+const ValidationError = require('../Errors/ValidationError');
 
 const { CREATED } = require('../utils/errorCodes');
 
@@ -10,6 +11,19 @@ module.exports.getCards = (req, res, next) => {
     .populate('owner')
     .then((cards) => res.send(cards))
     .catch(next);
+};
+
+module.exports.createCard = (req, res, next) => {
+  const { name, link } = req.body;
+  Card.create({ name, link, owner: req.user._id })
+    .then((cardData) => res.status(CREATED).send(cardData))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError());
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.deleteCardById = (req, res, next) => {
@@ -27,13 +41,6 @@ module.exports.deleteCardById = (req, res, next) => {
         })
         .catch(next);
     })
-    .catch(next);
-};
-
-module.exports.createCard = (req, res, next) => {
-  const { name, link } = req.body;
-  Card.create({ name, link, owner: req.user._id })
-    .then((cardData) => res.status(CREATED).send(cardData))
     .catch(next);
 };
 
