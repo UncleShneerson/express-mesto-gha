@@ -1,3 +1,5 @@
+// Большое спасибо за ревью. С валидацией ничего не напутал )
+
 const cookieParser = require('cookie-parser');
 const express = require('express');
 const mongoose = require('mongoose');
