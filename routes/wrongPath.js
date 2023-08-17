@@ -1,8 +1,8 @@
 const router = require('express').Router();
-const { NOT_FOUND } = require('../utils/errorCodes');
+const NotFoundError = require('../Errors/NotFoundError');
 
-const sendAllert = (req, res) => {
-  res.status(NOT_FOUND).send({ message: 'Путь не найден' });
+const sendAllert = () => {
+  throw new NotFoundError('Неверный путь');
 };
 
 router.use('/', sendAllert);

@@ -1,4 +1,3 @@
-const ValidationError = require('../Errors/ValidationError');
 const NotFoundError = require('../Errors/NotFoundError');
 const NotEnoughRightsError = require('../Errors/NotEnoughRightsError');
 
@@ -10,47 +9,32 @@ module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate('owner')
     .then((cards) => res.send(cards))
-    .catch((err) => next(err));
+    .catch(next);
 };
 
 module.exports.deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
-    .orFail()
+    .orFail(() => new NotFoundError('Данных c указанным id не существует'))
     .then((card) => {
       const { _id, owner } = card;
       if (String(owner) !== req.user._id) {
         throw new NotEnoughRightsError();
       }
       Card.findByIdAndRemove(_id)
-        .orFail()
+        .orFail(() => new NotFoundError('Данных c указанным id не существует'))
         .then((cardData) => {
           res.send(cardData);
         })
-        .catch((err) => next(err));
+        .catch(next);
     })
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Несуществующий ID карточки'));
-      }
-      if (err.name === 'CastError') {
-        next(new ValidationError('Некорректный ID карточки'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((cardData) => res.status(CREATED).send(cardData))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new ValidationError());
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.likeCard = (req, res, next) => {
@@ -59,20 +43,11 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail()
+    .orFail(() => new NotFoundError('Данных c указанным id не существует'))
     .then((cardData) => {
       res.send(cardData);
     })
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Несуществующий ID карточки'));
-      }
-      if (err.name === 'CastError') {
-        next(new ValidationError('Некорректный ID карточки'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.dislikeCard = (req, res, next) => {
@@ -81,18 +56,9 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail()
+    .orFail(() => new NotFoundError('Данных c указанным id не существует'))
     .then((cardData) => {
       res.send(cardData);
     })
-    .catch((err) => {
-      if (err.name === 'DocumentNotFoundError') {
-        next(new NotFoundError('Несуществующий ID карточки'));
-      }
-      if (err.name === 'CastError') {
-        next(new ValidationError('Некорректный ID карточки'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };

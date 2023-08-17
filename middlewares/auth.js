@@ -4,13 +4,17 @@ const AuthError = require('../Errors/AuthError');
 function auth(req, res, next) {
   const token = req.cookies.jwt;
   let payload;
-  try {
-    payload = jwt.verify(token, 'secret-phrase');
-  } catch (err) {
-    throw new AuthError('Необходима авторизацияя');
+  if (!token) {
+    throw new AuthError('Токен не найден');
+  } else {
+    try {
+      payload = jwt.verify(token, 'secret-phrase');
+    } catch (err) {
+      throw new AuthError('Необходима авторизацияя');
+    }
+    req.user = payload;
+    next();
   }
-  req.user = payload;
-  next();
 }
 
 module.exports = auth;
