@@ -9,44 +9,6 @@ const { CREATED } = require('../utils/errorCodes');
 const User = require('../models/user');
 
 // Создать юзера
-// module.exports.createUser = (req, res, next) => {
-//   const {
-//     name,
-//     about,
-//     avatar,
-//     email,
-//     password,
-//   } = req.body;
-//   bcrypt.hash(password, 10)
-//     .then((hash) => User.create({
-//       name,
-//       about,
-//       avatar,
-//       password: hash,
-//       email,
-//     }))
-//     .then((userData) => {
-//       const { _id } = userData;
-//       res
-//         .status(CREATED).send({
-//           _id,
-//           name,
-//           email,
-//           about,
-//           avatar,
-//         });
-//     })
-//     .catch((err) => {
-//       if (err.code === 11000) {
-//         next(new RegError());
-//       }
-//       if (err.name === 'ValidationError') {
-//         return next(new ValidationError());
-//       }
-//       return next(err);
-//     });
-// };
-
 module.exports.createUser = (req, res, next) => {
   const {
     name,
@@ -67,7 +29,7 @@ module.exports.createUser = (req, res, next) => {
       const { _id } = userData;
       User.findById(_id)
         .then((fullData) => {
-          res.send(fullData);
+          res.status(CREATED).send(fullData);
         })
         .catch(next);
     })
