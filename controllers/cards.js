@@ -35,7 +35,6 @@ module.exports.deleteCardById = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new ValidationError('Некорректный ID карточки'));
       } else {
-        console.log(err);
         next(err);
       }
     });
