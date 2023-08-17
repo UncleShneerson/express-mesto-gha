@@ -26,7 +26,7 @@ module.exports.createUser = (req, res, next) => {
       email,
     }))
     .then((userData) => {
-      const { _id, email, name, about, avatar } = userData;
+      const { _id } = userData;
       res
         .status(CREATED).send({
           _id,

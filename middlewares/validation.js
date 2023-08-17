@@ -17,7 +17,7 @@ const signUpValidate = celebrate({
 const logInValidate = celebrate({
   body: Joi.object().keys({
     email: Joi.string().pattern(regexEmail).required(),
-    password: Joi.string().min(6).pattern(regexEmail).required(),
+    password: Joi.string().min(6).required(),
   }),
 });
 

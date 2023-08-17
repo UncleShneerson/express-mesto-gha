@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const NotFoundError = require('../Errors/NotFoundError');
+const AuthError = require('../Errors/AuthError');
 
 const userSchema = new mongoose.Schema(
   {
@@ -38,12 +38,12 @@ userSchema.statics.findUserByCredentials = function innerFunction(email, passwor
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new NotFoundError('Неверные почта или пароль'));
+        return Promise.reject(new AuthError('Неверные почта или пароль'));
       }
       return bcrypt.compare(password, user.password)
         .then((isMatched) => {
           if (!isMatched) {
-            return Promise.reject(new NotFoundError('Неверные почта или пароль'));
+            return Promise.reject(new AuthError('Неверные почта или пароль'));
           }
           return user;
         });
