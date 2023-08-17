@@ -1,6 +1,6 @@
 const ValidationError = require('../Errors/ValidationError');
 const NotFoundError = require('../Errors/NotFoundError');
-const AuthError = require('../Errors/NotFoundError');
+const NotEnoughRightsError = require('../Errors/NotEnoughRightsError');
 
 const { CREATED } = require('../utils/errorCodes');
 
@@ -14,14 +14,12 @@ module.exports.getCards = (req, res, next) => {
 };
 
 module.exports.deleteCardById = (req, res, next) => {
-  // if (req.user._id !== req.params.cardId) {
-  //   next(new NotFoundError('ага щааааз!'));
-  // }
   Card.findById(req.params.cardId)
+    .orFail()
     .then((card) => {
       const { _id, owner } = card;
       if (String(owner) !== req.user._id) {
-        throw new AuthError('У вас недостаточно прав');
+        throw new NotEnoughRightsError();
       }
       Card.findByIdAndRemove(_id)
         .orFail()
@@ -37,6 +35,7 @@ module.exports.deleteCardById = (req, res, next) => {
       if (err.name === 'CastError') {
         next(new ValidationError('Некорректный ID карточки'));
       } else {
+        console.log(err);
         next(err);
       }
     });
