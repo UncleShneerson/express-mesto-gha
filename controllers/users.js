@@ -25,7 +25,17 @@ module.exports.createUser = (req, res, next) => {
       password: hash,
       email,
     }))
-    .then((userData) => res.status(CREATED).send(userData))
+    .then((userData) => {
+      const { _id, email, name, about, avatar } = userData;
+      res
+        .status(CREATED).send({
+          _id,
+          name,
+          email,
+          about,
+          avatar,
+        });
+    })
     .catch((err) => {
       if (err.code === 11000) {
         next(new RegError());

@@ -1,7 +1,7 @@
 const { Joi, celebrate } = require('celebrate');
 
-const regexURL = /((?:(?:http?|ftp)[s]*:\/\/)?[a-z0-9-%\/\&=?\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?)/;
-const regexEmail = /[^\s]*@[a-z0-9.-]*/;
+const regexURL = /((?:(?:http?|ftp)[s]*:\/\/)?[a-z0-9-%/&=?.]+\.[a-z]{2,4}\/?([^\s<>#%",{}\\|\\^[\]`]+)?)/;
+const regexEmail = /[\w-]{1,20}@[a-z0-9-]{1,20}\.{1}[a-z0-9-]*/;
 
 // Валидация авторизации
 const signUpValidate = celebrate({
