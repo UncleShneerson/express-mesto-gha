@@ -6,7 +6,7 @@ const allowedCors = [
 
 const DEFAULT_ALLOWED_METHODS = 'GET,HEAD,PUT,PATCH,POST,DELETE';
 
-function corsTest(req, res, next) {
+const cors = (req, res, next) => {
   const { origin } = req.headers;
   const { method } = req;
   const requestHeaders = req.headers['access-control-request-headers'];
@@ -22,6 +22,6 @@ function corsTest(req, res, next) {
   }
 
   return next();
-}
+};
 
-module.exports = corsTest;
+module.exports = cors;
